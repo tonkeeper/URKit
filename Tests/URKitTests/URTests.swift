@@ -5,21 +5,20 @@
 //  Licensed under the "BSD-2-Clause Plus Patent License"
 //
 
-import Testing
-import Foundation
+import XCTest
 @testable import URKit
 
-struct URTests {
-    @Test func testSinglePartUR() throws {
+class URTests: XCTestCase {
+    func testSinglePartUR() throws {
         let ur = makeMessageUR(len: 50)
         let encoded = UREncoder.encode(ur)
         let expected = "ur:bytes/hdeymejtswhhylkepmykhhtsytsnoyoyaxaedsuttydmmhhpktpmsrjtgwdpfnsboxgwlbaawzuefywkdplrsrjynbvygabwjldapfcsdwkbrkch"
-        #expect(encoded == expected)
+        XCTAssertEqual(encoded, expected)
         let decoded = try URDecoder.decode(encoded)
-        #expect(ur == decoded)
+        XCTAssertEqual(ur, decoded)
     }
 
-    @Test func testEncode() throws {
+    func testEncode() throws {
         let ur = makeMessageUR(len: 256)
         let encoder = UREncoder(ur, maxFragmentLen: 30)
         let parts = (0 ..< 20).map { _ in encoder.nextPart() }
@@ -46,10 +45,10 @@ struct URTests {
             "ur:bytes/19-9/lpbwascfadaxcywenbpljkhdcadekicpaajootjzpsdrbalpeywllbdsnbinaerkurspbncxgslgftvtsrjtksplcpeo",
             "ur:bytes/20-9/lpbbascfadaxcywenbpljkhdcayapmrleeleaxpasfrtrdkncffwjyjzgyetdmlewtkpktgllepfrltataztksmhkbot"
         ]
-        #expect(parts == expectedParts)
+        XCTAssertEqual(parts, expectedParts)
     }
 
-    @Test func testMultipartUR() throws {
+    func testMultipartUR() throws {
         let ur = makeMessageUR(len: 32767)
         let maxFragmentLen = 1000
         let encoder = UREncoder(ur, maxFragmentLen: maxFragmentLen, firstSeqNum: 100)
@@ -61,9 +60,9 @@ struct URTests {
         } while(decoder.result == nil)
         switch decoder.result! {
         case .success(let decodedUR):
-            #expect(ur == decodedUR)
+            XCTAssertEqual(ur, decodedUR)
         case .failure(let error):
-            Issue.record(error)
+            XCTFail(error.localizedDescription)
         }
     }
 }
