@@ -15,7 +15,11 @@ let package = Package(
             targets: ["URKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/BlockchainCommons/BCSwiftDCBOR", from: "1.0.0"),
+        // 2.0.0 is the first release where DCBOR declares the `SortedCollections` it imports
+        // in Sources/DCBOR/Map.swift (upstream moved it into its own SwiftSortedCollections
+        // package). Below that, DCBOR only links when it is statically absorbed into a final
+        // binary — building it as a framework fails on SortedDictionary symbols.
+        .package(url: "https://github.com/BlockchainCommons/BCSwiftDCBOR", from: "2.0.0"),
         // `Tag` is used by Registry/CryptoKeyPath.swift and Registry/TonSignRequest.swift.
         // It reaches them through DCBOR's `@_exported import BCTags`, which is enough to
         // compile but not to link: when URKit is built as a dynamic framework rather than
